@@ -1,42 +1,36 @@
-interface IProduct {
-  id: string; // "854cef69-976d-4c2a-a18c-2aa45046c390",
-  description: string; // "Если планируете решать задачи в тренажёре, берите два.",
-  image: string; // "/5_Dots.svg",
-  title: string; // "+1 час в сутках",
-  category: string; // "софт-скил",
-  price: number | null; // 750
+export interface IProductItem {
+	id: string;
+	description: string;
+	image: string;
+	title: string;
+	category: string;
+	price: number | null;
 }
 
-interface IProducts {
-  total: number; // 10
-  items: IProduct[];
+export interface IOrderForm {
+	payment?: string;
+	address?: string;
+	phone?: string;
+	email?: string;
+	total?: number;
+	items: string[];
 }
 
-interface IErrorResponse {
-  error: string;
+export type IAction = (event: MouseEvent) => void; // Обработчик клика
+
+export interface IOrderLot {
+	payment: string;
+	email: string;
+	phone: string;
+	address: string;
+	total: number;
+	items: string[];
 }
 
-enum OrderPayment { // 'online' | 'cash',
-  ONLINE = 'online',
-  CASH = 'cash',
+export interface IOrderResult {
+	id: string;
+	total: number;
 }
 
-interface IOrderResponse {
-  id: string; // "28c57cb4-3002-4445-8aa1-2a06a5055ae5",
-  total: number; // 2200
-}
 
-interface IOrderPayload {
-  payment: OrderPayment; // 'online' | 'cash',
-  email: string; // "test@test.ru",
-  phone: string; // "+71234567890",
-  address: string; // "Spb Vosstania 1",
-  total: number; // 2200,
-  items: string[];
-}
-
-export interface IMethods {
-  getProducts: () => Promise<IProducts>;
-  getProduct: (id: string) => Promise<IProduct | IErrorResponse>;
-  submitBasket: (payload: IOrderPayload) => Promise<IOrderResponse | IErrorResponse>;
-}
+export type FormErrors = { [key: string]: string | undefined };
