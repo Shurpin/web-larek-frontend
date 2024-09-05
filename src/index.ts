@@ -12,7 +12,7 @@ import { BasketModel } from './components/Model/BasketModel';
 import { Basket } from './components/View/Basket';
 import { BasketItem } from './components/View/BasketItem';
 import { FormModel } from './components/Model/FormModel';
-import { Order } from './components/View/FormOrder';
+import { FormOrder } from './components/View/FormOrder';
 import { Contacts } from './components/View/FormContacts';
 import { Success } from './components/View/Success';
 
@@ -31,7 +31,7 @@ const productModel = new ProductModel(events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const basket = new Basket(basketTemplate, events);
 const basketModel = new BasketModel();
-const order = new Order(orderTemplate, events);
+const formOrder = new FormOrder(orderTemplate, events);
 const formModel = new FormModel(events);
 const contacts = new Contacts(contactsTemplate, events);
 
@@ -43,7 +43,7 @@ function renderBasketContent() {
 			events.emit('product:removeBasket', item);
 		});
 
-		return basketItem.render(item, index);
+		return basketItem.renderBasketItem({ data: item, index });
 	});
 
 	modal.content = basket.render();
@@ -56,7 +56,7 @@ events.on('products:update', () => {
 	productModel.products.forEach((productItem: IProductItem) => {
 		const card = new Card(cardCatalogTemplate, () => events.emit('card:onClick', productItem));
 
-		ensureElement<HTMLElement>('.gallery').append(card.render(productItem));
+		ensureElement<HTMLElement>('.gallery').append(card.renderCard(productItem));
 	});
 });
 
@@ -70,7 +70,7 @@ events.on('modalCard:open', (item: IProductItem) => {
 	const basketProducts = basketModel.basketProducts;
 	const CardModal = new CardPreviewModal(CardPreviewModalTemplate, events, basketProducts);
 
-	modal.content = CardModal.render(item);
+	modal.content = CardModal.renderCard(item);
 	modal.render();
 });
 
@@ -102,13 +102,13 @@ events.on('basket:change', () => {
 
 // Открытие модального окна "способа оплаты" и "адреса доставки"
 events.on('order:open', () => {
-	modal.content = order.render();
+	modal.content = formOrder.render();
 	modal.render();
 
 	formModel.items = basketModel.basketProducts.filter((product: IProductItem) => product.price).map((product: IProductItem) => product.id);
 });
 
-events.on('order:paymentSelection', (button: HTMLButtonElement) => {
+events.on('form-order:paymentType', (button: HTMLButtonElement) => {
 	formModel.payment = button.name;
 });
 
@@ -120,8 +120,9 @@ events.on(`order:changeAddress`, (data: { field: string; value: string }) => {
 // Валидация данных "address" и payment
 events.on('formErrors:address', (errors: Partial<IOrderForm>) => {
 	const { address, payment } = errors;
-	order.valid = !address && !payment;
-	order.formErrors.textContent = Object.values({ address, payment })
+
+	formOrder.valid = !address && !payment;
+	formOrder.formErrors.textContent = Object.values({ address, payment })
 		.filter((i) => !!i)
 		.join('; ');
 });

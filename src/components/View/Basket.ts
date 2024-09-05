@@ -1,5 +1,6 @@
 import { createElement } from "../../utils/utils";
 import { IEvents } from "../base/events";
+import { Component } from '../base/Component';
 
 export interface IBasket {
   basket: HTMLElement;
@@ -14,7 +15,7 @@ export interface IBasket {
   render(): HTMLElement;
 }
 
-export class Basket implements IBasket {
+export class Basket extends Component<IBasket>{
   basket: HTMLElement;
   title: HTMLElement;
   basketList: HTMLElement;
@@ -24,6 +25,8 @@ export class Basket implements IBasket {
   headerBasketCounter: HTMLElement;
 
   constructor(template: HTMLTemplateElement, protected events: IEvents) {
+    super(template)
+
     this.basket = template.content.querySelector('.basket').cloneNode(true) as HTMLElement;
     this.title = this.basket.querySelector('.modal__title');
     this.basketList = this.basket.querySelector('.basket__list');
@@ -53,15 +56,23 @@ export class Basket implements IBasket {
   }
 
   renderHeaderBasketCounter(value: number) {
-    this.headerBasketCounter.textContent = String(value);
+    // this.headerBasketCounter.textContent = String(value);
+    this.setText(this.headerBasketCounter, value)
   }
 
-  renderSumAllProducts(sumAll: number) {
-    this.basketPrice.textContent = String(sumAll + ' синапсов');
+  // renderSumAllProducts(sumAll: number) {
+  //   this.basketPrice.textContent = String(sumAll + 'синапсов');
+  // }
+
+  renderSumAllProducts(value: number) {
+    this.setText(this.basketPrice, String(value + ' синапсов'))
   }
 
+
+ // Вернуть корневой DOM-элемент
   render() {
-    this.title.textContent = 'Корзина';
+    // this.title.textContent = 'Корзина';
+    this.setText(this.title,'Корзина')
     return this.basket;
   }
 }

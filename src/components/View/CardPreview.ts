@@ -5,7 +5,7 @@ import { IEvents } from "../base/events";
 export interface ICard {
   text: HTMLElement;
   button: HTMLElement;
-  render(data: IProductItem): HTMLElement;
+  renderCard(data: IProductItem): HTMLElement;
 }
 
 export class CardPreview extends Card implements ICard {
@@ -14,6 +14,7 @@ export class CardPreview extends Card implements ICard {
 
   constructor(template: HTMLTemplateElement, protected events: IEvents, actions?: IAction) {
     super(template);
+
     this.text = this._cardElement.querySelector('.card__text');
     this.button = this._cardElement.querySelector('.card__button');
     this.button.addEventListener('click', () => { this.events.emit('card:addBasket') });
@@ -28,14 +29,18 @@ export class CardPreview extends Card implements ICard {
     }
   }
 
-  render(data: IProductItem): HTMLElement {
-    this._cardCategory.textContent = data.category;
+  renderCard(data: IProductItem): HTMLElement {
+    // this._cardCategory.textContent = data.category;
+    // this._cardTitle.textContent = data.title;
+    // this.text.textContent = data.description;
+    this.setText(this._cardCategory, data.category);
+    this.setText(this._cardTitle, data.title);
+    this.setText(this.text, data.description);
+
     this.cardCategory = data.category;
-    this._cardTitle.textContent = data.title;
     this._cardImage.src = data.image;
     this._cardImage.alt = this._cardTitle.textContent;
     this._cardPrice.textContent = this.setPrice(data.price);
-    this.text.textContent = data.description;
     this.button.textContent = this.notSale(data);
     return this._cardElement;
   }
