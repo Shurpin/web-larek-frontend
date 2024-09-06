@@ -36,18 +36,12 @@ export class Card extends Component<ICard> {
     }
   }
 
-  // protected setText(element: HTMLElement, value: unknown): string {
-  //   if (element) {
-  //     return element.textContent = String(value);
-  //   }
-  // }
-
   set cardCategory(value: string) {
     this.setText(this._cardCategory, value);
     this._cardCategory.className = `card__category card__category_${this._colors[value]}`
   }
 
-  protected setPrice(value: number | null): string { // !!!!!!!!!!!!!!!!!!!
+  protected setPrice(value: number | null): string {
     if (value === null) {
       return 'Бесценно'
     }
@@ -55,14 +49,11 @@ export class Card extends Component<ICard> {
   }
 
   renderCard(productItem: IProductItem): HTMLElement {
-    // this._cardCategory.textContent = productItem.category;
-    // this._cardTitle.textContent = productItem.title;
     this.setText(this._cardCategory, productItem.category);
     this.setText(this._cardTitle, productItem.title);
+    this.setImage(this._cardImage, productItem.image, this._cardTitle.textContent)
+    this.setText(this._cardPrice, this.setPrice(productItem.price));
     this.cardCategory = productItem.category;
-    this._cardImage.src = productItem.image;
-    this._cardImage.alt = this._cardTitle.textContent;
-    this._cardPrice.textContent = this.setPrice(productItem.price); // !!!!!!!!!!!!!!!!!!!
 
     return this._cardElement;
   }

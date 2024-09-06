@@ -16,7 +16,7 @@ export abstract class Component<T> {
     }
 
     // Установить текстовое содержимое
-    protected setText(element: HTMLElement, value: unknown) {
+    protected setText(element: HTMLElement, value?: string | number) {
         if (element) {
             element.textContent = String(value);
         }
@@ -25,16 +25,6 @@ export abstract class Component<T> {
     // Сменить статус блокировки для кнопки
     setDisabled(element: HTMLButtonElement, isDisabled: boolean) {
         element.disabled = isDisabled;
-    }
-
-    // Скрыть
-    protected setHidden(element: HTMLElement) {
-        element.style.display = 'none';
-    }
-
-    // Показать
-    protected setVisible(element: HTMLElement) {
-        element.style.removeProperty('display');
     }
 
     // Установить изображение с алтернативным текстом

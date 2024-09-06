@@ -42,19 +42,15 @@ export class CardPreviewModal extends Card implements ICard {
   renderCard(data: IProductItem): HTMLElement {
     const isInBasket = this.basketProducts.some((productItem: IProductItem) => productItem.id === data.id);
 
-    // this._cardCategory.textContent = data.category;
-    // this._cardTitle.textContent = data.title;
-    // this.text.textContent = data.description;
     this.setText(this._cardCategory, data.category);
     this.setText(this._cardTitle, data.title);
     this.setText(this.text, data.description);
-
+    this.setImage(this._cardImage, data.image, this._cardTitle.textContent)
+    this.setText(this._cardPrice, this.setPrice(data.price));
+    this.setText(this.button, this.notSale(data, isInBasket));
+    this.setDisabled(this.button, isInBasket)
     this.cardCategory = data.category;
-    this._cardImage.src = data.image;
-    this._cardImage.alt = this._cardTitle.textContent;
-    this._cardPrice.textContent = this.setPrice(data.price);
-    this.button.textContent = this.notSale(data, isInBasket);
-    this.button.disabled = isInBasket;
+
 
     return this._cardElement;
   }

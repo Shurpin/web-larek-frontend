@@ -9,7 +9,7 @@ export interface IBasketItem {
 	buttonDelete: HTMLButtonElement;
 	renderBasketItem(data: IProductItem, item: number): HTMLElement;
 }
-// extends Component<IBasketItem>
+
 export class BasketItem extends Component<IBasketItem> {
   basketItem: HTMLElement;
 	index:HTMLElement;
@@ -19,7 +19,7 @@ export class BasketItem extends Component<IBasketItem> {
 
   constructor (template: HTMLTemplateElement, onClickAction?: IAction) {
 		super(template)
-		
+
     this.basketItem = template.content.querySelector('.basket__item').cloneNode(true) as HTMLElement;
 		this.index = this.basketItem.querySelector('.basket__item-index');
 		this.title = this.basketItem.querySelector('.card__title');
@@ -31,7 +31,7 @@ export class BasketItem extends Component<IBasketItem> {
 		}
   }
 
-	protected setPrice(value: number | null) { // !!!!!!!!!!!!!!!!!!!!!!!!!!
+	protected setPrice(value: number | null): string {
     if (value === null) {
       return 'Бесценно'
     }
@@ -39,11 +39,10 @@ export class BasketItem extends Component<IBasketItem> {
   }
 
 	renderBasketItem({ data, index }: { data: IProductItem; index: number; }) {
-	// this.index.textContent = String(index + 1);
-	// this.title.textContent = data.title;
-	  this.price.textContent = this.setPrice(data.price); //!!!!!!!!
+	  this.setText(this.price, this.setPrice(data.price));
 	  this.setText(this.index, String(index + 1));
 	  this.setText(this.title, data.title);
+
 		return this.basketItem;
 	}
 }

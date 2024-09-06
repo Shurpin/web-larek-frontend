@@ -5,9 +5,9 @@ import { ApiModel } from './components/Model/ApiModel';
 import { ProductModel } from './components/Model/ProductModel';
 import { Card } from './components/View/Card';
 import { CardPreviewModal } from './components/View/CardPreviewModal';
-import { IOrderForm, IProductItem } from './types';
+import { IInputChangeData, IProductItem } from './types';
 import { Modal } from './components/View/Modal';
-import { ensureElement } from './utils/utils';
+import { cloneTemplate, ensureElement } from './utils/utils';
 import { BasketModel } from './components/Model/BasketModel';
 import { Basket } from './components/View/Basket';
 import { BasketItem } from './components/View/BasketItem';
@@ -31,9 +31,9 @@ const productModel = new ProductModel(events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const basket = new Basket(basketTemplate, events);
 const basketModel = new BasketModel();
-const formOrder = new FormOrder(orderTemplate, events);
+const formOrder = new FormOrder(cloneTemplate(orderTemplate), events);
+const formContacts = new Contacts(cloneTemplate(contactsTemplate), events);
 const formModel = new FormModel(events);
-const contacts = new Contacts(contactsTemplate, events);
 
 function renderBasketContent() {
 	basket.renderSumAllProducts(basketModel.getSumAllProducts());
@@ -50,7 +50,7 @@ function renderBasketContent() {
 	modal.render();
 }
 
-// Отображения карточек товара после обновления списка продуктов
+// Отображение карточек товара после обновления списка продуктов
 events.on('products:update', () => {
 	// забираем данные из модели, которые ранее взяли из api
 	productModel.products.forEach((productItem: IProductItem) => {
@@ -89,7 +89,7 @@ events.on('product:addBasket', () => {
 	modal.close();
 });
 
-// // Удаление товара из корзины
+// Удаление товара из корзины
 events.on('product:removeBasket', (item: IProductItem) => {
 	basketModel.deleteCardToBasket(item);
 	events.emit('basket:change');
@@ -102,62 +102,109 @@ events.on('basket:change', () => {
 
 // Открытие модального окна "способа оплаты" и "адреса доставки"
 events.on('order:open', () => {
-	modal.content = formOrder.render();
-	modal.render();
-
-	formModel.items = basketModel.basketProducts.filter((product: IProductItem) => product.price).map((product: IProductItem) => product.id);
-});
-
-events.on('form-order:paymentType', (button: HTMLButtonElement) => {
-	formModel.payment = button.name;
-});
-
-// Отслеживаем изменение в поле ввода адреса доставки"
-events.on(`order:changeAddress`, (data: { field: string; value: string }) => {
-	formModel.setOrderAddress(data.field, data.value);
-});
-
-// Валидация данных "address" и payment
-events.on('formErrors:address', (errors: Partial<IOrderForm>) => {
-	const { address, payment } = errors;
-
-	formOrder.valid = !address && !payment;
-	formOrder.formErrors.textContent = Object.values({ address, payment })
-		.filter((i) => !!i)
-		.join('; ');
-});
-
-// Открытие модального окна Email и Телефон
-events.on('contacts:open', () => {
-	formModel.total = basketModel.getSumAllProducts();
-	modal.content = contacts.render();
+	modal.content = formOrder.render({
+		address: '',
+		valid: false,
+		errors: [],
+	});
 	modal.render();
 });
 
-// Отслеживаем изменение в полях вода Email и Телефон
-events.on(`contacts:changeInput`, (data: { field: string; value: string }) => {
-	formModel.setOrderData(data.field, data.value);
+// выбираем тип оплаты
+events.on('order.paymentType:change', (data: IInputChangeData) => {
+	formModel.payment = data.value;
+
+	// TODO валидация
+	const errors = [];
+
+	if (!data.value) {
+		errors.push('Выберите способ оплаты')
+	}
+
+	const errorMessage = errors.join('; ');
+
+	formOrder.valid = formModel.payment && formModel.address && !errorMessage;
+	formOrder.errors = errorMessage;
 });
 
-// Валидация данных Email и Телефон
-events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
-	const { email, phone } = errors;
-	contacts.valid = !email && !phone;
-	contacts.formErrors.textContent = Object.values({ phone, email })
-		.filter((i) => !!i)
-		.join('; ');
+// вводим адрес
+events.on(`order.address:change`, (data: IInputChangeData) => {
+	formModel.address = data.value;
+
+	// TODO валидация
+	const errors = [];
+
+	if (data.value.length <= 10) {
+		errors.push('Не верный формат address')
+	}
+
+	const errorMessage = errors.join('; ');
+
+	formOrder.valid = formModel.payment && formModel.address && !errorMessage;
+	formOrder.errors = errorMessage;
 });
 
-events.on('success:open', () => {
+events.on('order:submit', () => {
+	modal.content = formContacts.render({
+		email: '',
+		phone: '',
+		valid: false,
+		errors: [],
+	});
+
+	modal.render();
+});
+
+// выбираем тип оплаты
+events.on('contacts.email:change', (data: IInputChangeData) => {
+	formModel.email = data.value;
+
+	// TODO валидация
+	const errors = [];
+
+	if (!data.value.includes('@') || !data.value.includes('.')) {
+		errors.push('Не верный формат email')
+	}
+
+	const errorMessage = errors.join('; ');
+
+	formContacts.valid = formModel.email && formModel.phone && !errorMessage;
+	formContacts.errors = errorMessage;
+});
+
+// вводим адрес
+events.on('contacts.phone:change', (data: IInputChangeData) => {
+	formModel.phone = data.value;
+
+	// TODO валидация
+	const errors = [];
+
+	if (!data.value.includes('+7')) {
+		errors.push('Не верный формат phone')
+	}
+
+	const errorMessage = errors.join('; ');
+
+	formContacts.valid = formModel.email && formModel.phone && !errorMessage;
+	formContacts.errors = errorMessage;
+});
+
+events.on('contacts:submit', () => {
+	const total = basketModel.getSumAllProducts();
+	const items = basketModel.basketProducts.filter((product: IProductItem) => product.price).map((product: IProductItem) => product.id);
+	const formData = formModel.getOrderLot();
+	const submitData = { ...formData, items, total }
+
 	apiModel
-		.postOrderLot(formModel.getOrderLot())
-		.then(() => {
+		.postOrderLot(submitData)
+		.then((data) => {
 			basketModel.clearBasketProducts();
 			basket.renderHeaderBasketCounter(basketModel.getCounter());
 			events.emit('basket:change');
 
 			const success = new Success(successTemplate, events);
-			modal.content = success.render(basketModel.getSumAllProducts());
+
+			modal.content = success.renderSuccess(data.total);
 			modal.render();
 		})
 		.catch((error) => console.log(error));
@@ -167,7 +214,7 @@ events.on('success:close', () => modal.close());
 
 apiModel
 	.getProductList()
-	.then(function (data: IProductItem[]) {
+	.then(function(data: IProductItem[]) {
 		// успешный ответ от сервера
 		productModel.products = data; // запись в productModel
 	})

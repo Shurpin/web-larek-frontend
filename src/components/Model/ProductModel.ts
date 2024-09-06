@@ -4,7 +4,6 @@ import { IEvents } from "../base/events";
 export interface IProductModel {
   products: IProductItem[];
   selectedProduct: IProductItem;
-
   setSelectedCard(item: IProductItem): void;
 }
 

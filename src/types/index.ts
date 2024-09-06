@@ -32,5 +32,9 @@ export interface IOrderResult {
 	total: number;
 }
 
-
 export type FormErrors = { [key: string]: string | undefined };
+
+export interface IInputChangeData {
+	field: string;
+	value: string;
+}

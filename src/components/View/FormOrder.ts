@@ -1,27 +1,22 @@
 import { IEvents } from "../base/events";
-import { Component } from '../base/Component';
+import { Form } from '../base/Form';
+import { IInputChangeData } from '../../types';
 
 export interface IOrder {
+  address: string;
   formOrder: HTMLFormElement;
   buttonAll: HTMLButtonElement[];
-  paymentSelection: string;
-  formErrors: HTMLElement;
-  render(): HTMLElement;
 }
 
-export class FormOrder extends Component<IOrder> {
+export class FormOrder<T> extends Form<IOrder> {
   formOrder: HTMLFormElement;
   buttonAll: HTMLButtonElement[];
-  buttonSubmit: HTMLButtonElement;
-  formErrors: HTMLElement;
 
-  constructor(template: HTMLTemplateElement, protected events: IEvents) {
-    super(template)
+  constructor(template: HTMLFormElement, protected events: IEvents) {
+    super(template, events)
 
-    this.formOrder = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
+    this.formOrder = template;
     this.buttonAll = Array.from(this.formOrder.querySelectorAll('.button_alt'));
-    this.buttonSubmit = this.formOrder.querySelector('.order__button');
-    this.formErrors = this.formOrder.querySelector('.form__errors');
 
     this.buttonAll.forEach((item: HTMLButtonElement) => {
       item.addEventListener('click', (event) => {
@@ -31,28 +26,12 @@ export class FormOrder extends Component<IOrder> {
             this.toggleClass(domButton, 'button_alt-active', domButton.name === clickButton.name);
         })
 
-        events.emit('form-order:paymentType', clickButton);
+        events.emit('order.paymentType:change', { value: item.name , field: 'paymentType' } as IInputChangeData);
       });
     });
-
-    this.formOrder.addEventListener('input', (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      const field = target.name;
-      const value = target.value;
-      this.events.emit(`order:changeAddress`, { field, value });
-    });
-
-    this.formOrder.addEventListener('submit', (event: Event) => {
-      event.preventDefault();
-      this.events.emit('contacts:open');
-    });
   }
 
-  set valid(isValid: boolean) {
-    this.setDisabled(this.buttonSubmit, !isValid)
-  }
-
-  render() {
-    return this.formOrder
+  set address(value: string) {
+    (this.container.elements.namedItem('address') as HTMLInputElement).value = value;
   }
 }

@@ -56,22 +56,15 @@ export class Basket extends Component<IBasket>{
   }
 
   renderHeaderBasketCounter(value: number) {
-    // this.headerBasketCounter.textContent = String(value);
     this.setText(this.headerBasketCounter, value)
   }
-
-  // renderSumAllProducts(sumAll: number) {
-  //   this.basketPrice.textContent = String(sumAll + 'синапсов');
-  // }
 
   renderSumAllProducts(value: number) {
     this.setText(this.basketPrice, String(value + ' синапсов'))
   }
 
-
  // Вернуть корневой DOM-элемент
   render() {
-    // this.title.textContent = 'Корзина';
     this.setText(this.title,'Корзина')
     return this.basket;
   }

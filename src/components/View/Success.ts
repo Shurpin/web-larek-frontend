@@ -1,18 +1,21 @@
 import { IEvents } from "../base/events";
+import { Component } from '../base/Component';
 
 export interface ISuccess {
   success: HTMLElement;
   description: HTMLElement;
   button: HTMLButtonElement;
-  render(total: number): HTMLElement;
+  renderSuccess(total: number): HTMLElement;
 }
 
-export class Success implements ISuccess{
+export class Success extends Component<ISuccess> {
   success: HTMLElement;
   description: HTMLElement;
   button: HTMLButtonElement;
 
   constructor(template: HTMLTemplateElement, protected events: IEvents) {
+    super(template);
+
     this.success = template.content.querySelector('.order-success').cloneNode(true) as HTMLElement;
     this.description = this.success.querySelector('.order-success__description');
     this.button = this.success.querySelector('.order-success__close');
@@ -22,8 +25,8 @@ export class Success implements ISuccess{
     });
   }
 
-  render(total: number) {
-    this.description.textContent = String(`Списано ${total} синапсов`);
+  renderSuccess(total: number) {
+    this.setText(this.description, String(`Списано ${total} синапсов`))
 
     return this.success
   }

@@ -1,45 +1,24 @@
 import { IEvents } from "../base/events";
+import { Form } from '../base/Form';
 
 export interface IContacts {
-  formContacts: HTMLFormElement;
-  inputAll: HTMLInputElement[];
-  buttonSubmit: HTMLButtonElement;
-  formErrors: HTMLElement;
-  render(): HTMLElement;
+  email: string;
+  phone: string;
 }
 
-export class Contacts implements IContacts {
+export class Contacts extends Form<IContacts>{
   formContacts: HTMLFormElement;
-  inputAll: HTMLInputElement[];
-  buttonSubmit: HTMLButtonElement;
-  formErrors: HTMLElement;
 
-  constructor(template: HTMLTemplateElement, protected events: IEvents) {
-    this.formContacts = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
-    this.inputAll = Array.from(this.formContacts.querySelectorAll('.form__input'));
-    this.buttonSubmit = this.formContacts.querySelector('.button');
-    this.formErrors = this.formContacts.querySelector('.form__errors');
+  constructor(template: HTMLFormElement, protected events: IEvents) {
+    super(template, events)
 
-    this.inputAll.forEach(item => {
-      item.addEventListener('input', (event) => {
-        const target = event.target as HTMLInputElement;
-        const field = target.name;
-        const value = target.value;
-        this.events.emit(`contacts:changeInput`, { field, value });
-      })
-    })
-
-    this.formContacts.addEventListener('submit', (event: Event) => {
-      event.preventDefault();
-      this.events.emit('success:open');
-    });
+    this.formContacts = template;
+  }
+  set email(value: string) {
+    (this.container.elements.namedItem('email') as HTMLInputElement).value = value;
   }
 
-  set valid(value: boolean) {
-    this.buttonSubmit.disabled = !value;
-  }
-
-  render() {
-    return this.formContacts
+  set phone(value: string) {
+    (this.container.elements.namedItem('phone') as HTMLInputElement).value = value;
   }
 }

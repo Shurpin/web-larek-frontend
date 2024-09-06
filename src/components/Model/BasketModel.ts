@@ -26,13 +26,13 @@ export class BasketModel implements IBasketModel {
 
   // количество товара в корзине
   getCounter() {
-    return this.basketProducts.length;
+    return this._basketProducts.length;
   }
 
   // сумма всех товаров в корзине
   getSumAllProducts() {
     let sumAll = 0;
-    this.basketProducts.forEach(item => {
+    this._basketProducts.forEach(item => {
       sumAll = sumAll + item.price;
     });
     return sumAll;
@@ -53,6 +53,6 @@ export class BasketModel implements IBasketModel {
   }
 
   clearBasketProducts() {
-    this.basketProducts = []
+    this._basketProducts = []
   }
 }
