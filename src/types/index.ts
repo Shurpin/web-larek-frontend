@@ -7,15 +7,6 @@ export interface IProductItem {
 	price: number | null;
 }
 
-export interface IOrderForm {
-	payment?: string;
-	address?: string;
-	phone?: string;
-	email?: string;
-	total?: number;
-	items: string[];
-}
-
 export type IAction = (event: MouseEvent) => void; // Обработчик клика
 
 export interface IOrderLot {

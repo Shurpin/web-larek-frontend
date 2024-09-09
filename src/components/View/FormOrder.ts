@@ -30,6 +30,9 @@ export class FormOrder<T> extends Form<IOrder> {
       });
     });
   }
+  set phone(value: string) {
+    (this.container.elements.namedItem('phone') as HTMLInputElement).value = value;
+}
 
   set address(value: string) {
     (this.container.elements.namedItem('address') as HTMLInputElement).value = value;

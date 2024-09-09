@@ -11,7 +11,7 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { BasketModel } from './components/Model/BasketModel';
 import { Basket } from './components/View/Basket';
 import { BasketItem } from './components/View/BasketItem';
-import { FormModel } from './components/Model/FormModel';
+import { FormModel, IFormModel } from './components/Model/FormModel';
 import { FormOrder } from './components/View/FormOrder';
 import { Contacts } from './components/View/FormContacts';
 import { Success } from './components/View/Success';
@@ -112,36 +112,12 @@ events.on('order:open', () => {
 
 // выбираем тип оплаты
 events.on('order.paymentType:change', (data: IInputChangeData) => {
-	formModel.payment = data.value;
-
-	// TODO валидация
-	const errors = [];
-
-	if (!data.value) {
-		errors.push('Выберите способ оплаты')
-	}
-
-	const errorMessage = errors.join('; ');
-
-	formOrder.valid = formModel.payment && formModel.address && !errorMessage;
-	formOrder.errors = errorMessage;
+	formModel.setOrderPaymentType(data.value);
 });
 
 // вводим адрес
 events.on(`order.address:change`, (data: IInputChangeData) => {
-	formModel.address = data.value;
-
-	// TODO валидация
-	const errors = [];
-
-	if (data.value.length <= 10) {
-		errors.push('Не верный формат address')
-	}
-
-	const errorMessage = errors.join('; ');
-
-	formOrder.valid = formModel.payment && formModel.address && !errorMessage;
-	formOrder.errors = errorMessage;
+	formModel.setOrderAddress(data.value);
 });
 
 events.on('order:submit', () => {
@@ -157,36 +133,20 @@ events.on('order:submit', () => {
 
 // выбираем тип оплаты
 events.on('contacts.email:change', (data: IInputChangeData) => {
-	formModel.email = data.value;
-
-	// TODO валидация
-	const errors = [];
-
-	if (!data.value.includes('@') || !data.value.includes('.')) {
-		errors.push('Не верный формат email')
-	}
-
-	const errorMessage = errors.join('; ');
-
-	formContacts.valid = formModel.email && formModel.phone && !errorMessage;
-	formContacts.errors = errorMessage;
+	formModel.setOrderEmail(data.value);
 });
 
 // вводим адрес
 events.on('contacts.phone:change', (data: IInputChangeData) => {
-	formModel.phone = data.value;
+	formModel.setOrderPhone(data.value);
+});
 
-	// TODO валидация
-	const errors = [];
-
-	if (!data.value.includes('+7')) {
-		errors.push('Не верный формат phone')
-	}
-
-	const errorMessage = errors.join('; ');
-
-	formContacts.valid = formModel.email && formModel.phone && !errorMessage;
-	formContacts.errors = errorMessage;
+// выводит ошибки
+events.on('formErrors:change', (errors: Partial<IFormModel>) => {
+	const { paymentType, address, email, phone } = errors;
+	formOrder.valid = !paymentType && !address;
+	formContacts.valid = !email && !phone;
+	formOrder.errors = Object.values({paymentType, address}).filter(i => !!i).join('; ');
 });
 
 events.on('contacts:submit', () => {
@@ -219,3 +179,6 @@ apiModel
 		productModel.products = data; // запись в productModel
 	})
 	.catch((error) => console.log(error)); // сообщили об ошибке в консоль
+
+
+	
