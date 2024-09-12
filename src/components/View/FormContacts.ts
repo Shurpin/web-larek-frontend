@@ -9,10 +9,10 @@ export interface IContacts {
 export class Contacts extends Form<IContacts>{
   formContacts: HTMLFormElement;
 
-  constructor(template: HTMLFormElement, protected events: IEvents) {
-    super(template, events)
+  constructor(container: HTMLFormElement, protected events: IEvents) {
+    super(container, events)
 
-    this.formContacts = template;
+    this.formContacts = container;
   }
   set email(value: string) {
     (this.container.elements.namedItem('email') as HTMLInputElement).value = value;

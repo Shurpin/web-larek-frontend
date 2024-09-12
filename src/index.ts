@@ -15,9 +15,10 @@ import { FormModel, IFormModel } from './components/Model/FormModel';
 import { FormOrder } from './components/View/FormOrder';
 import { Contacts } from './components/View/FormContacts';
 import { Success } from './components/View/Success';
+import { Page } from './components/View/Page';
 
 const cardCatalogTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
-const CardPreviewModalTemplate = document.querySelector('#card-preview') as HTMLTemplateElement;
+const cardPreviewModalTemplate = document.querySelector('#card-preview') as HTMLTemplateElement;
 const basketTemplate = document.querySelector('#basket') as HTMLTemplateElement;
 const cardBasketTemplate = document.querySelector('#card-basket') as HTMLTemplateElement;
 const orderTemplate = document.querySelector('#order') as HTMLTemplateElement;
@@ -29,17 +30,21 @@ const events = new EventEmitter();
 const productModel = new ProductModel(events);
 
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-const basket = new Basket(basketTemplate, events);
+const basket = new Basket(cloneTemplate(basketTemplate), events);
 const basketModel = new BasketModel();
+const page = new Page(document.body, events);
 const formOrder = new FormOrder(cloneTemplate(orderTemplate), events);
 const formContacts = new Contacts(cloneTemplate(contactsTemplate), events);
 const formModel = new FormModel(events);
+const success = new Success(cloneTemplate(successTemplate), events);
+const cardModal = new CardPreviewModal(cloneTemplate(cardPreviewModalTemplate), events, basketModel.basketProducts);
+
 
 function renderBasketContent() {
 	basket.renderSumAllProducts(basketModel.getSumAllProducts());
 
 	basket.items = basketModel.basketProducts.map((item, index) => {
-		const basketItem = new BasketItem(cardBasketTemplate, () => {
+		const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), () => {
 			events.emit('product:removeBasket', item);
 		});
 
@@ -54,7 +59,7 @@ function renderBasketContent() {
 events.on('products:update', () => {
 	// забираем данные из модели, которые ранее взяли из api
 	productModel.products.forEach((productItem: IProductItem) => {
-		const card = new Card(cardCatalogTemplate, () => events.emit('card:onClick', productItem));
+		const card = new Card(cloneTemplate(cardCatalogTemplate), () => events.emit('card:onClick', productItem));
 
 		ensureElement<HTMLElement>('.gallery').append(card.renderCard(productItem));
 	});
@@ -67,10 +72,8 @@ events.on('card:onClick', (item: IProductItem) => {
 
 // Открываем модальное окно товара *
 events.on('modalCard:open', (item: IProductItem) => {
-	const basketProducts = basketModel.basketProducts;
-	const CardModal = new CardPreviewModal(CardPreviewModalTemplate, events, basketProducts);
 
-	modal.content = CardModal.renderCard(item);
+	modal.content = cardModal.renderCard(item);
 	modal.render();
 });
 
@@ -85,7 +88,6 @@ events.on('product:addBasket', () => {
 	basketModel.setSelectedCard(productModel.selectedProduct);
 
 	events.emit('basket:change');
-
 	modal.close();
 });
 
@@ -96,7 +98,7 @@ events.on('product:removeBasket', (item: IProductItem) => {
 });
 
 events.on('basket:change', () => {
-	basket.renderHeaderBasketCounter(basketModel.getCounter());
+	page.counter = (basketModel.getCounter());
 	renderBasketContent();
 });
 
@@ -159,10 +161,8 @@ events.on('contacts:submit', () => {
 		.postOrderLot(submitData)
 		.then((data) => {
 			basketModel.clearBasketProducts();
-			basket.renderHeaderBasketCounter(basketModel.getCounter());
+			page.counter = (basketModel.getCounter());
 			events.emit('basket:change');
-
-			const success = new Success(successTemplate, events);
 
 			modal.content = success.renderSuccess(data.total);
 			modal.render();
@@ -170,7 +170,19 @@ events.on('contacts:submit', () => {
 		.catch((error) => console.log(error));
 });
 
-events.on('success:close', () => modal.close());
+events.on('success:close', () => {
+	modal.close()
+});
+
+// Блокируем прокрутку страницы если открыта модалка
+events.on('modal:open', () => {
+	page.locked = true;
+});
+
+// ... и разблокируем
+events.on('modal:close', () => {
+	page.locked = false;
+});
 
 apiModel
 	.getProductList()

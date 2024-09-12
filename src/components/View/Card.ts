@@ -15,30 +15,30 @@ const CardColors: Record<string, string> = {
 }
 
 export class Card extends Component<ICard> {
-  protected _cardElement: HTMLElement;
+  protected cardElementContainer: HTMLElement;
   protected _cardCategory: HTMLElement;
   protected _cardTitle: HTMLElement;
   protected _cardImage: HTMLImageElement;
   protected _cardPrice: HTMLElement;
   protected _colors = CardColors
 
-  constructor(template: HTMLTemplateElement, onClickAction?: IAction) {
-    super(template)
+  constructor(cardElementContainer: HTMLElement, onClickAction?: IAction) {
+    super(cardElementContainer)
 
-    this._cardElement = template.content.querySelector('.card').cloneNode(true) as HTMLElement;
-    this._cardCategory = this._cardElement.querySelector('.card__category');
-    this._cardTitle = this._cardElement.querySelector('.card__title');
-    this._cardImage = this._cardElement.querySelector('.card__image');
-    this._cardPrice = this._cardElement.querySelector('.card__price');
+    this.cardElementContainer = cardElementContainer;
+    this._cardCategory = cardElementContainer.querySelector('.card__category');
+    this._cardTitle = cardElementContainer.querySelector('.card__title');
+    this._cardImage = cardElementContainer.querySelector('.card__image');
+    this._cardPrice = cardElementContainer.querySelector('.card__price');
 
     if (onClickAction) {
-      this._cardElement.addEventListener('click', onClickAction);
+      cardElementContainer.addEventListener('click', onClickAction);
     }
   }
 
   set cardCategory(value: string) {
     this.setText(this._cardCategory, value);
-    this._cardCategory.className = `card__category card__category_${this._colors[value]}`
+    this.setClassName(this._cardCategory, `card__category card__category_${this._colors[value]}`);
   }
 
   protected setPrice(value: number | null): string {
@@ -55,6 +55,6 @@ export class Card extends Component<ICard> {
     this.setText(this._cardPrice, this.setPrice(productItem.price));
     this.cardCategory = productItem.category;
 
-    return this._cardElement;
+    return this.cardElementContainer;
   }
 }

@@ -2,7 +2,7 @@ import { IAction, IProductItem } from "../../types";
 import { Component } from "../base/Component";
 
 export interface IBasketItem {
-  basketItem: HTMLElement;
+  basketItemContainer: HTMLElement;
 	index:HTMLElement;
 	title: HTMLElement;
 	price: HTMLElement;
@@ -11,20 +11,20 @@ export interface IBasketItem {
 }
 
 export class BasketItem extends Component<IBasketItem> {
-  basketItem: HTMLElement;
+  protected basketItemContainer: HTMLElement;
 	index:HTMLElement;
 	title: HTMLElement;
 	price: HTMLElement;
 	buttonDelete: HTMLButtonElement;
 
-  constructor (template: HTMLTemplateElement, onClickAction?: IAction) {
-		super(template)
+  constructor (basketItemContainer: HTMLTemplateElement, onClickAction?: IAction) {
+		super(basketItemContainer)
 
-    this.basketItem = template.content.querySelector('.basket__item').cloneNode(true) as HTMLElement;
-		this.index = this.basketItem.querySelector('.basket__item-index');
-		this.title = this.basketItem.querySelector('.card__title');
-		this.price = this.basketItem.querySelector('.card__price');
-		this.buttonDelete = this.basketItem.querySelector('.basket__item-delete');
+    this.basketItemContainer = basketItemContainer;
+		this.index = basketItemContainer.querySelector('.basket__item-index');
+		this.title = basketItemContainer.querySelector('.card__title');
+		this.price = basketItemContainer.querySelector('.card__price');
+		this.buttonDelete = basketItemContainer.querySelector('.basket__item-delete');
 
 		if (onClickAction) {
 			this.buttonDelete.addEventListener('click', onClickAction);
@@ -43,6 +43,6 @@ export class BasketItem extends Component<IBasketItem> {
 	  this.setText(this.index, String(index + 1));
 	  this.setText(this.title, data.title);
 
-		return this.basketItem;
+		return this.basketItemContainer;
 	}
 }

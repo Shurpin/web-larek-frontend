@@ -8,15 +8,15 @@ export interface IOrder {
   buttonAll: HTMLButtonElement[];
 }
 
-export class FormOrder<T> extends Form<IOrder> {
+export class FormOrder extends Form<IOrder> {
   formOrder: HTMLFormElement;
   buttonAll: HTMLButtonElement[];
 
-  constructor(template: HTMLFormElement, protected events: IEvents) {
-    super(template, events)
+  constructor(formOrderContainer: HTMLFormElement, protected events: IEvents) {
+    super(formOrderContainer, events)
 
-    this.formOrder = template;
-    this.buttonAll = Array.from(this.formOrder.querySelectorAll('.button_alt'));
+    this.formOrder = formOrderContainer;
+    this.buttonAll = Array.from(formOrderContainer.querySelectorAll('.button_alt'));
 
     this.buttonAll.forEach((item: HTMLButtonElement) => {
       item.addEventListener('click', (event) => {

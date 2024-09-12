@@ -1,5 +1,5 @@
 import { Card } from "./Card";
-import { IAction, IProductItem } from '../../types';
+import { IProductItem } from '../../types';
 import { IEvents } from "../base/events";
 
 export interface ICard {
@@ -13,12 +13,12 @@ export class CardPreviewModal extends Card implements ICard {
   button: HTMLButtonElement;
   basketProducts: IProductItem[];
 
-  constructor(template: HTMLTemplateElement, protected events: IEvents, basketProducts: IProductItem[]) {
-    super(template);
+  constructor(container: HTMLTemplateElement, protected events: IEvents, basketProducts: IProductItem[]) {
+    super(container);
 
     this.basketProducts = basketProducts;
-    this.text = this._cardElement.querySelector('.card__text');
-    this.button = this._cardElement.querySelector('.card__button');
+    this.text = this.cardElementContainer.querySelector('.card__text');
+    this.button = this.cardElementContainer.querySelector('.card__button');
 
 
     this.button.addEventListener('click', () => {
@@ -33,8 +33,6 @@ export class CardPreviewModal extends Card implements ICard {
     if(data.price) {
       return 'Купить'
     } else {
-      this.button.setAttribute('disabled', 'true')
-
       return 'Не продается'
     }
   }
@@ -48,10 +46,9 @@ export class CardPreviewModal extends Card implements ICard {
     this.setImage(this._cardImage, data.image, this._cardTitle.textContent)
     this.setText(this._cardPrice, this.setPrice(data.price));
     this.setText(this.button, this.notSale(data, isInBasket));
-    this.setDisabled(this.button, isInBasket)
+    this.setDisabled(this.button, isInBasket || data.price === null);
     this.cardCategory = data.category;
 
-
-    return this._cardElement;
+    return this.cardElementContainer;
   }
 }

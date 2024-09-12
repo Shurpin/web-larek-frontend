@@ -9,16 +9,16 @@ export interface ISuccess {
 }
 
 export class Success extends Component<ISuccess> {
-  success: HTMLElement;
+  SuccessContainer: HTMLElement;
   description: HTMLElement;
   button: HTMLButtonElement;
 
-  constructor(template: HTMLTemplateElement, protected events: IEvents) {
-    super(template);
+  constructor(SuccessContainer: HTMLTemplateElement, protected events: IEvents) {
+    super(SuccessContainer);
 
-    this.success = template.content.querySelector('.order-success').cloneNode(true) as HTMLElement;
-    this.description = this.success.querySelector('.order-success__description');
-    this.button = this.success.querySelector('.order-success__close');
+    this.SuccessContainer = SuccessContainer;
+    this.description = SuccessContainer.querySelector('.order-success__description');
+    this.button = SuccessContainer.querySelector('.order-success__close');
 
     this.button.addEventListener('click', () => {
       events.emit('success:close');
@@ -28,6 +28,6 @@ export class Success extends Component<ISuccess> {
   renderSuccess(total: number) {
     this.setText(this.description, String(`Списано ${total} синапсов`))
 
-    return this.success
+    return this.SuccessContainer
   }
 }
