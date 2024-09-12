@@ -39,16 +39,15 @@ const formModel = new FormModel(events);
 const success = new Success(cloneTemplate(successTemplate), events);
 const cardModal = new CardPreviewModal(cloneTemplate(cardPreviewModalTemplate), events, basketModel.basketProducts);
 
-
 function renderBasketContent() {
-	basket.renderSumAllProducts(basketModel.getSumAllProducts());
+	basket.setSumAllProducts(basketModel.getSumAllProducts());
 
-	basket.items = basketModel.basketProducts.map((item, index) => {
-		const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), () => {
-			events.emit('product:removeBasket', item);
-		});
+	basket.items = basketModel.basketProducts.map((item, itemIndex) => {
+			const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), () => {
+					events.emit('product:removeBasket', item);
+			});
 
-		return basketItem.renderBasketItem({ data: item, index });
+			return basketItem.render({ data: item, itemIndex });
 	});
 
 	modal.content = basket.render();
@@ -57,11 +56,11 @@ function renderBasketContent() {
 
 // Отображение карточек товара после обновления списка продуктов
 events.on('products:update', () => {
-	// забираем данные из модели, которые ранее взяли из api
+	// Забираем данные из модели, которые ранее взяли из API
 	productModel.products.forEach((productItem: IProductItem) => {
-		const card = new Card(cloneTemplate(cardCatalogTemplate), () => events.emit('card:onClick', productItem));
+			const card = new Card(cloneTemplate(cardCatalogTemplate), () => events.emit('card:onClick', productItem));
 
-		ensureElement<HTMLElement>('.gallery').append(card.renderCard(productItem));
+			ensureElement<HTMLElement>('.gallery').append(card.render(productItem)); // Обновленный вызов
 	});
 });
 
@@ -73,7 +72,7 @@ events.on('card:onClick', (item: IProductItem) => {
 // Открываем модальное окно товара *
 events.on('modalCard:open', (item: IProductItem) => {
 
-	modal.content = cardModal.renderCard(item);
+	modal.content = cardModal.render(item);
 	modal.render();
 });
 
@@ -164,8 +163,9 @@ events.on('contacts:submit', () => {
 			page.counter = (basketModel.getCounter());
 			events.emit('basket:change');
 
-			modal.content = success.renderSuccess(data.total);
-			modal.render();
+   // Передаем total в метод render
+   modal.content = success.render({ total: data.total });
+   modal.render();
 		})
 		.catch((error) => console.log(error));
 });

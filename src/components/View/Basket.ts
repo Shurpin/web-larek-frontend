@@ -9,7 +9,7 @@ export interface IBasket {
   button: HTMLButtonElement;
   basketPrice: HTMLElement;
   headerBasketCounter: HTMLElement;
-  renderSumAllProducts(sumAll: number): void;
+  setSumAllProducts(sumAll: number): void;
   render(): HTMLElement;
 }
 
@@ -18,12 +18,10 @@ export class Basket extends Component<IBasket>{
   basketList: HTMLElement;
   button: HTMLButtonElement;
   basketPrice: HTMLElement;
-  protected basketContainer: HTMLElement;
 
   constructor(basketContainer: HTMLElement, protected events: IEvents) {
     super(basketContainer)
 
-    this.basketContainer = basketContainer;
     this.title = basketContainer.querySelector('.modal__title');
     this.basketList = basketContainer.querySelector('.basket__list');
     this.button = basketContainer.querySelector('.basket__button');
@@ -33,7 +31,6 @@ export class Basket extends Component<IBasket>{
       this.events.emit('order:open');
     });
     
-    this.items = [];
   }
 
   set items(items: HTMLElement[]) {
@@ -46,13 +43,13 @@ export class Basket extends Component<IBasket>{
     }
   }
 
-  renderSumAllProducts(value: number) {
+  setSumAllProducts(value: number) {
     this.setText(this.basketPrice, String(value + ' синапсов'))
   }
 
  // Вернуть корневой DOM-элемент
-  render() {
-    this.setText(this.title,'Корзина')
-    return this.basketContainer;
-  }
+ render(): HTMLElement {
+  this.setText(this.title, 'Корзина');
+  return super.render({});
+}
 }

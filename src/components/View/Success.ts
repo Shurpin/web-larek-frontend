@@ -5,7 +5,7 @@ export interface ISuccess {
   success: HTMLElement;
   description: HTMLElement;
   button: HTMLButtonElement;
-  renderSuccess(total: number): HTMLElement;
+  render(total: number): HTMLElement;
 }
 
 export class Success extends Component<ISuccess> {
@@ -25,9 +25,10 @@ export class Success extends Component<ISuccess> {
     });
   }
 
-  renderSuccess(total: number) {
-    this.setText(this.description, String(`Списано ${total} синапсов`))
-
-    return this.SuccessContainer
+  render(data?: Partial<ISuccess> & Record<string, unknown>): HTMLElement {
+    if (data && 'total' in data) {
+      this.setText(this.description, `Списано ${data.total} синапсов`);
+    }
+    return super.render(data);
   }
 }

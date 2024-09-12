@@ -43,7 +43,6 @@ export class Modal extends Component <IModal> {
 
   render(): HTMLElement {
     this.open();
-
-    return this.modalContainer
+    return super.render({});
   }
 }
