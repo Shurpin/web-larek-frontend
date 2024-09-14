@@ -3,21 +3,29 @@
  */
 export abstract class Component<T> {
     protected constructor(protected readonly container: HTMLElement) {
+        this.container = container;
         // Учитывайте что код в конструкторе исполняется ДО всех объявлений в дочернем классе
     }
 
     // Инструментарий для работы с DOM в дочерних компонентах
+    protected getElement(selector: string): HTMLElement {
+        const element = this.container.querySelector(selector);
+        if (element instanceof HTMLElement) {
+          return element;
+        }
+        throw new Error(`Element with selector "${selector}" not found.`);
+      }
 
     // Переключить класс
-    toggleClass(element: HTMLElement, className: string, force?: boolean) {
+    protected toggleClass(element: HTMLElement, className: string, force?: boolean) {
         element.classList.toggle(className, force);
     }
     // Добовляем класс запрета прокрутки 
-    addClass(element: HTMLElement, className: string) {
+    protected addClass(element: HTMLElement, className: string) {
         element.classList.add(className);
     }
   // Удаляем класс запрета прокрутки 
-    removeClass(element: HTMLElement, className: string) {
+  protected removeClass(element: HTMLElement, className: string) {
         element.classList.remove(className);
 }
 
@@ -35,7 +43,7 @@ export abstract class Component<T> {
     }
 
     // Сменить статус блокировки для кнопки
-    setDisabled(element: HTMLButtonElement, isDisabled: boolean) {
+    protected setDisabled(element: HTMLButtonElement, isDisabled: boolean) {
         element.disabled = isDisabled;
     }
     
@@ -48,7 +56,7 @@ export abstract class Component<T> {
             }
         }
     }
-    replaceChildren(element: HTMLElement, elements: HTMLElement[]) {
+    protected replaceChildren(element: HTMLElement, elements: HTMLElement[]) {
         element.replaceChildren(...elements);
     }
 

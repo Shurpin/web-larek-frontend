@@ -9,16 +9,17 @@ export interface ISuccess {
 }
 
 export class Success extends Component<ISuccess> {
-  SuccessContainer: HTMLElement;
+  container: HTMLElement;
   description: HTMLElement;
   button: HTMLButtonElement;
 
-  constructor(SuccessContainer: HTMLTemplateElement, protected events: IEvents) {
-    super(SuccessContainer);
+  constructor(container: HTMLTemplateElement, protected events: IEvents) {
+    super(container);
 
-    this.SuccessContainer = SuccessContainer;
-    this.description = SuccessContainer.querySelector('.order-success__description');
-    this.button = SuccessContainer.querySelector('.order-success__close');
+    this.container = container;
+
+    this.description = this.getElement('.order-success__description');
+    this.button = this.getElement('.order-success__close') as HTMLButtonElement;
 
     this.button.addEventListener('click', () => {
       events.emit('success:close');

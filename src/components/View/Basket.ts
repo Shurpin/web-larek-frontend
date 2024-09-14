@@ -3,7 +3,7 @@ import { IEvents } from "../base/events";
 import { Component } from '../base/Component';
 
 export interface IBasket {
-  basketContainer: HTMLElement;
+  container: HTMLElement;
   title: HTMLElement;
   basketList: HTMLElement;
   button: HTMLButtonElement;
@@ -19,13 +19,14 @@ export class Basket extends Component<IBasket>{
   button: HTMLButtonElement;
   basketPrice: HTMLElement;
 
-  constructor(basketContainer: HTMLElement, protected events: IEvents) {
-    super(basketContainer)
+  constructor(container: HTMLElement, protected events: IEvents) {
+    super(container)
 
-    this.title = basketContainer.querySelector('.modal__title');
-    this.basketList = basketContainer.querySelector('.basket__list');
-    this.button = basketContainer.querySelector('.basket__button');
-    this.basketPrice = basketContainer.querySelector('.basket__price');
+
+    this.title = this.getElement('.modal__title');
+    this.basketList = this.getElement('.basket__list');
+    this.button = this.getElement('.basket__button') as HTMLButtonElement;
+    this.basketPrice = this.getElement('.basket__price');
     
     this.button.addEventListener('click', () => {
       this.events.emit('order:open');

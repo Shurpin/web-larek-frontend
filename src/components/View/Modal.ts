@@ -8,21 +8,21 @@ export interface IModal {
 }
 
 export class Modal extends Component <IModal> {
-  protected modalContainer: HTMLElement;
+  protected container: HTMLElement;
   protected closeButton: HTMLButtonElement;
   protected _content: HTMLElement;
   protected modalScroll: HTMLElement;
 
-  constructor(modalContainer: HTMLElement, protected events: IEvents) {
-    super(modalContainer)
+  constructor(container: HTMLElement, protected events: IEvents) {
+    super(container)
 
-    this.modalContainer = modalContainer;
-    this.closeButton = modalContainer.querySelector('.modal__close');
-    this._content = modalContainer.querySelector('.modal__content');
+    this.container = container;
+    this.closeButton = this.getElement('.modal__close') as HTMLButtonElement;
+    this._content = this.getElement('.modal__content');
 
     this.closeButton.addEventListener('click', this.close.bind(this));
-    modalContainer.addEventListener('click', this.close.bind(this));
-    modalContainer.querySelector('.modal__container').addEventListener('click', event => event.stopPropagation());
+    container.addEventListener('click', this.close.bind(this));
+    container.querySelector('.modal__container').addEventListener('click', event => event.stopPropagation());
   }
 
   set content(value: HTMLElement) {
@@ -30,13 +30,13 @@ export class Modal extends Component <IModal> {
   }
 
   open() {
-    this.modalContainer.classList.add('modal_active'); 
+    this.container.classList.add('modal_active'); 
     this.events.emit('modal:open');
 
   }
 
   close() {
-    this.modalContainer.classList.remove('modal_active');
+    this.container.classList.remove('modal_active');
     this.content = null;
     this.events.emit('modal:close');
   }

@@ -4,13 +4,13 @@ import { IEvents } from "../base/events";
 
 
 interface IPage {
-    headerBasketCounter: number;
+    counter: number;
     locked: boolean;
     wrapper: HTMLElement;
 }
 
 export class Page extends Component<IPage> {
-    protected headerBasketCounter: HTMLElement;
+    protected _counter: HTMLElement;
     protected _wrapper: HTMLElement;
     protected _basket: HTMLElement;
 
@@ -18,9 +18,9 @@ export class Page extends Component<IPage> {
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
 
-        this.headerBasketCounter = ensureElement<HTMLElement>('.header__basket-counter');
-        this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
-        this._basket = ensureElement<HTMLElement>('.header__basket');
+        this._counter = this.getElement('.header__basket-counter');
+        this._wrapper = this.getElement('.page__wrapper');
+        this._basket = this.getElement('.header__basket');
     
         this._basket.addEventListener('click', () => {
             this.events.emit('basket:open');
@@ -28,7 +28,7 @@ export class Page extends Component<IPage> {
     }
 
     set counter(value: number) {
-        this.setText(this.headerBasketCounter, String(value));
+        this.setText(this._counter, String(value));
     }
 
     set locked(value: boolean) {

@@ -16,15 +16,16 @@ export class Card extends Component<IProductItem> {
   protected _cardPrice: HTMLElement;
   protected _colors = CardColors;
 
-  constructor(cardElementContainer: HTMLElement, onClickAction?: IAction) {
-      super(cardElementContainer);
-      this._cardCategory = cardElementContainer.querySelector('.card__category');
-      this._cardTitle = cardElementContainer.querySelector('.card__title');
-      this._cardImage = cardElementContainer.querySelector('.card__image');
-      this._cardPrice = cardElementContainer.querySelector('.card__price');
+  constructor(container: HTMLElement, onClickAction?: IAction) {
+      super(container);
+
+      this._cardCategory = this.getElement('.card__category');
+      this._cardTitle = this.getElement('.card__category');
+      this._cardImage = this.getElement('.card__image') as HTMLImageElement;
+      this._cardPrice = this.getElement('.card__price');
 
       if (onClickAction) {
-          cardElementContainer.addEventListener('click', onClickAction);
+          container.addEventListener('click', onClickAction);
       }
   }
 

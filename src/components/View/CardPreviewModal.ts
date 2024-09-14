@@ -11,8 +11,9 @@ export class CardPreviewModal extends Card {
     super(container); // Вызываем конструктор родительского класса
 
     this.basketProducts = basketProducts;
-    this.text = container.querySelector('.card__text');
-    this.button = container.querySelector('.card__button');
+
+    this.text = this.getElement('.card__text');
+    this.button = this.getElement('.card__button') as HTMLButtonElement;
 
     this.button.addEventListener('click', () => {
       this.events.emit('product:addBasket');

@@ -2,7 +2,7 @@ import { IAction, IProductItem } from "../../types";
 import { Component } from "../base/Component";
 
 export interface IBasketItem {
-	basketItemContainer: HTMLElement;
+	container: HTMLElement;
 	index: HTMLElement;
 	title: HTMLElement;
 	price: HTMLElement;
@@ -17,13 +17,13 @@ export class BasketItem extends Component<IBasketItem> {
   private price: HTMLElement;
   private buttonDelete: HTMLButtonElement;
 
-  constructor (basketItemContainer: HTMLTemplateElement, onClickAction?: IAction) {
-		super(basketItemContainer)
+  constructor (container: HTMLTemplateElement, onClickAction?: IAction) {
+		super(container)
 
-		this.index = basketItemContainer.querySelector('.basket__item-index');
-		this.title = basketItemContainer.querySelector('.card__title');
-		this.price = basketItemContainer.querySelector('.card__price');
-		this.buttonDelete = basketItemContainer.querySelector('.basket__item-delete');
+    this.index = this.getElement('.basket__item-index');
+    this.title = this.getElement('.card__title');
+    this.price = this.getElement('.card__price');
+    this.buttonDelete = this.getElement('.basket__item-index') as HTMLButtonElement;;
 
 		if (onClickAction) {
 			this.buttonDelete.addEventListener('click', onClickAction);
