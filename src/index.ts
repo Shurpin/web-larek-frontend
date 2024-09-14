@@ -39,21 +39,6 @@ const formModel = new FormModel(events);
 const success = new Success(cloneTemplate(successTemplate), events);
 const cardModal = new CardPreviewModal(cloneTemplate(cardPreviewModalTemplate), events, basketModel.basketProducts);
 
-function renderBasketContent() {
-	basket.setSumAllProducts(basketModel.getSumAllProducts());
-
-	basket.items = basketModel.basketProducts.map((item, itemIndex) => {
-			const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), () => {
-					events.emit('product:removeBasket', item);
-			});
-
-			return basketItem.render({ data: item, itemIndex });
-	});
-
-	modal.content = basket.render();
-	modal.render();
-}
-
 // Отображение карточек товара после обновления списка продуктов
 events.on('products:update', () => {
 	// Забираем данные из модели, которые ранее взяли из API
@@ -71,44 +56,64 @@ events.on('card:onClick', (item: IProductItem) => {
 
 // Открываем модальное окно товара *
 events.on('modalCard:open', (item: IProductItem) => {
-
-	modal.content = cardModal.render(item);
-	modal.render();
+	modal.render({
+		content: cardModal.render(item),
+	});
 });
 
 // Открытие модального окна корзины
 events.on('basket:open', () => {
-	modal.content = basket.render();
-	modal.render();
+	modal.render({
+		content: basket.render(),
+	});
 });
 
 // Добавление товара в корзину
-events.on('product:addBasket', () => {
-	basketModel.setSelectedCard(productModel.selectedProduct);
-
+events.on('product:addBasketItem', (currentProductItem: IProductItem) => {
+	// добавляем элемент в память
+	basketModel.addBasketItem(currentProductItem);
+	// обновляем содержимое на экране
 	events.emit('basket:change');
+	// закрываем окно карточки
 	modal.close();
 });
 
 // Удаление товара из корзины
-events.on('product:removeBasket', (item: IProductItem) => {
-	basketModel.deleteCardToBasket(item);
+events.on('product:removeBasketItem', (removeItem: IProductItem) => {
+	// убираем элемент из памяти
+	basketModel.deleteCardToBasket(removeItem);
+	// обновляем содержимое на экране
 	events.emit('basket:change');
 });
 
+// обновляем содержимое на экране
 events.on('basket:change', () => {
-	page.counter = (basketModel.getCounter());
-	renderBasketContent();
+	// меняем отображение счетчика в корзине
+	page.counter = basketModel.basketProducts.length;
+	// обновляем список элементов корзины
+	basket.items = basketModel.basketProducts.map((item, itemIndex) => {
+			const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), () => {
+					events.emit('product:removeBasketItem', item);
+			});
+
+			return basketItem.render({ data: item, itemIndex });
+	});
+	let sumValue = 0;
+	basketModel.basketProducts.forEach((basketItem: IProductItem) => {
+		sumValue = sumValue + basketItem.price;
+	})
+	basket.setSumAllProducts(sumValue);
 });
 
 // Открытие модального окна "способа оплаты" и "адреса доставки"
 events.on('order:open', () => {
-	modal.content = formOrder.render({
-		address: '',
-		valid: false,
-		errors: [],
+	modal.render({
+		content: formOrder.render({
+			address: '',
+			valid: false,
+			errors: [],
+		})
 	});
-	modal.render();
 });
 
 // выбираем тип оплаты
@@ -122,14 +127,14 @@ events.on(`order.address:change`, (data: IInputChangeData) => {
 });
 
 events.on('order:submit', () => {
-	modal.content = formContacts.render({
-		email: '',
-		phone: '',
-		valid: false,
-		errors: [],
+	modal.render({
+		content: formContacts.render({
+			email: '',
+			phone: '',
+			valid: false,
+			errors: [],
+		})
 	});
-
-	modal.render();
 });
 
 // выбираем тип оплаты
@@ -160,12 +165,12 @@ events.on('contacts:submit', () => {
 		.postOrderLot(submitData)
 		.then((data) => {
 			basketModel.clearBasketProducts();
-			page.counter = (basketModel.getCounter());
 			events.emit('basket:change');
 
-   // Передаем total в метод render
-   modal.content = success.render({ total: data.total });
-   modal.render();
+   		// Передаем total в метод render
+			 modal.render({
+				 content: success.render({ total: data.total })
+			 });
 		})
 		.catch((error) => console.log(error));
 });
@@ -193,4 +198,3 @@ apiModel
 	.catch((error) => console.log(error)); // сообщили об ошибке в консоль
 
 
-	

@@ -2,37 +2,31 @@ import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
 export interface IModal {
-  open(): void;
-  close(): void;
-  render(): HTMLElement
+  content: HTMLElement;
 }
 
-export class Modal extends Component <IModal> {
-  protected container: HTMLElement;
-  protected closeButton: HTMLButtonElement;
+export class Modal extends Component<IModal> {
+  protected _closeButton: HTMLElement;
   protected _content: HTMLElement;
-  protected modalScroll: HTMLElement;
 
   constructor(container: HTMLElement, protected events: IEvents) {
     super(container)
 
-    this.container = container;
-    this.closeButton = this.getElement('.modal__close') as HTMLButtonElement;
+    this._closeButton = this.getElement('.modal__close');
     this._content = this.getElement('.modal__content');
 
-    this.closeButton.addEventListener('click', this.close.bind(this));
+    this._closeButton.addEventListener('click', this.close.bind(this));
     container.addEventListener('click', this.close.bind(this));
     container.querySelector('.modal__container').addEventListener('click', event => event.stopPropagation());
   }
 
-  set content(value: HTMLElement) {
-    this._content.replaceChildren(value);
+  set content(contentElement: HTMLElement) {
+    this.replaceChildren(this._content, [contentElement])
   }
 
   open() {
-    this.container.classList.add('modal_active'); 
+    this.toggleClass(this.container, 'modal_active', true)
     this.events.emit('modal:open');
-
   }
 
   close() {
@@ -41,8 +35,10 @@ export class Modal extends Component <IModal> {
     this.events.emit('modal:close');
   }
 
-  render(): HTMLElement {
+  render(data: IModal): HTMLElement {
+    super.render(data);
     this.open();
-    return super.render({});
+
+    return this.container;
   }
 }

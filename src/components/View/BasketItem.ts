@@ -23,7 +23,7 @@ export class BasketItem extends Component<IBasketItem> {
     this.index = this.getElement('.basket__item-index');
     this.title = this.getElement('.card__title');
     this.price = this.getElement('.card__price');
-    this.buttonDelete = this.getElement('.basket__item-index') as HTMLButtonElement;;
+    this.buttonDelete = this.getElement('.basket__item-delete') as HTMLButtonElement;
 
 		if (onClickAction) {
 			this.buttonDelete.addEventListener('click', onClickAction);
@@ -38,10 +38,11 @@ export class BasketItem extends Component<IBasketItem> {
   }
 
   render(data: { data: IProductItem, itemIndex: number }): HTMLElement {
+		super.render(data);
     this.setText(this.price, this.setPrice(data.data.price));
     this.setText(this.index, String(data.itemIndex + 1));
     this.setText(this.title, data.data.title);
 
-    return super.render(data);
+		return this.container;
   }
 }

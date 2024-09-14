@@ -9,14 +9,12 @@ export interface IOrder {
 }
 
 export class FormOrder extends Form<IOrder> {
-  formOrder: HTMLFormElement;
   buttonAll: HTMLButtonElement[];
 
-  constructor(formOrderContainer: HTMLFormElement, protected events: IEvents) {
-    super(formOrderContainer, events)
+  constructor(container: HTMLFormElement, protected events: IEvents) {
+    super(container, events)
 
-    this.formOrder = formOrderContainer;
-    this.buttonAll = Array.from(formOrderContainer.querySelectorAll('.button_alt'));
+    this.buttonAll = Array.from(this.container.querySelectorAll('.button_alt'));
 
     this.buttonAll.forEach((item: HTMLButtonElement) => {
       item.addEventListener('click', (event) => {

@@ -16,30 +16,28 @@ export interface IBasket {
 export class Basket extends Component<IBasket>{
   title: HTMLElement;
   basketList: HTMLElement;
-  button: HTMLButtonElement;
+  button: HTMLElement;
   basketPrice: HTMLElement;
 
   constructor(container: HTMLElement, protected events: IEvents) {
     super(container)
 
-
-    this.title = this.getElement('.modal__title');
     this.basketList = this.getElement('.basket__list');
-    this.button = this.getElement('.basket__button') as HTMLButtonElement;
+    this.title = this.getElement('.modal__title');
+    this.button = this.getElement('.basket__button');
     this.basketPrice = this.getElement('.basket__price');
-    
+
     this.button.addEventListener('click', () => {
       this.events.emit('order:open');
     });
-    
   }
 
   set items(items: HTMLElement[]) {
     if (items.length) {
       this.replaceChildren(this.basketList, items);
-      this.setDisabled(this.button, false);
+      this.setDisabled(this.button as HTMLButtonElement, false);
     } else {
-      this.setDisabled(this.button, true);
+      this.setDisabled(this.button as HTMLButtonElement, true);
       this.replaceChildren(this.basketList, [createElement<HTMLParagraphElement>('p', { textContent: 'Корзина пуста' })]);
     }
   }
@@ -50,7 +48,9 @@ export class Basket extends Component<IBasket>{
 
  // Вернуть корневой DOM-элемент
  render(): HTMLElement {
+  super.render({});
   this.setText(this.title, 'Корзина');
-  return super.render({});
+
+  return this.container;
 }
 }

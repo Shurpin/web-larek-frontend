@@ -1,6 +1,5 @@
-import {Component} from "./Component";
-import {IEvents} from "./events";
-import {ensureElement} from "../../utils/utils";
+import {Component} from "../base/Component";
+import {IEvents} from "../base/events";
 
 interface IFormState {
     valid: boolean;
@@ -8,14 +7,14 @@ interface IFormState {
 }
 
 export class Form<T> extends Component<IFormState> {
-    protected _submit: HTMLButtonElement;
+    protected _submit: HTMLElement;
     protected _errors: HTMLElement;
 
     constructor(protected container: HTMLFormElement, protected events: IEvents) {
         super(container);
 
-        this._submit = ensureElement<HTMLButtonElement>('button[type=submit]', this.container);
-        this._errors = ensureElement<HTMLElement>('.form__errors', this.container);
+        this._submit = this.getElement('button[type=submit]');
+        this._errors = this.getElement('.form__errors');
 
         this.container.addEventListener('input', (e: Event) => {
             const target = e.target as HTMLInputElement;
@@ -38,7 +37,7 @@ export class Form<T> extends Component<IFormState> {
     }
 
     set valid(value: boolean) {
-        this._submit.disabled = !value;
+        (this._submit as HTMLButtonElement).disabled = !value;
     }
 
     set errors(value: string) {
@@ -47,7 +46,7 @@ export class Form<T> extends Component<IFormState> {
 
     render(state: Partial<T> & IFormState) {
         const {valid, errors, ...inputs} = state;
-        super.render({ valid, errors });
+        super.render({valid, errors});
         Object.assign(this, inputs);
         return this.container;
 

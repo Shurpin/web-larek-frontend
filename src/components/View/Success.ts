@@ -27,9 +27,12 @@ export class Success extends Component<ISuccess> {
   }
 
   render(data?: Partial<ISuccess> & Record<string, unknown>): HTMLElement {
+    super.render(data);
+
     if (data && 'total' in data) {
       this.setText(this.description, `Списано ${data.total} синапсов`);
     }
-    return super.render(data);
+
+    return this.container;
   }
 }

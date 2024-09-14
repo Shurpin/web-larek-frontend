@@ -2,9 +2,8 @@ import { IProductItem } from "../../types";
 
 export interface IBasketModel {
   basketProducts: IProductItem[];
-  getCounter: () => number;
   getSumAllProducts: () => number;
-  setSelectedCard(data: IProductItem): void;
+  addBasketItem(data: IProductItem): void;
   deleteCardToBasket(item: IProductItem): void;
   clearBasketProducts(): void
 }
@@ -24,11 +23,6 @@ export class BasketModel implements IBasketModel {
     return this._basketProducts;
   }
 
-  // количество товара в корзине
-  getCounter() {
-    return this._basketProducts.length;
-  }
-
   // сумма всех товаров в корзине
   getSumAllProducts() {
     let sumAll = 0;
@@ -39,7 +33,7 @@ export class BasketModel implements IBasketModel {
   }
 
   // добавить карточку товара в корзину
-  setSelectedCard(data: IProductItem) {
+  addBasketItem(data: IProductItem) {
     this._basketProducts.push(data);
   }
 

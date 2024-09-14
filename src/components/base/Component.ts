@@ -20,11 +20,11 @@ export abstract class Component<T> {
     protected toggleClass(element: HTMLElement, className: string, force?: boolean) {
         element.classList.toggle(className, force);
     }
-    // Добовляем класс запрета прокрутки 
+    // Добовляем класс запрета прокрутки
     protected addClass(element: HTMLElement, className: string) {
         element.classList.add(className);
     }
-  // Удаляем класс запрета прокрутки 
+  // Удаляем класс запрета прокрутки
   protected removeClass(element: HTMLElement, className: string) {
         element.classList.remove(className);
 }
@@ -46,7 +46,7 @@ export abstract class Component<T> {
     protected setDisabled(element: HTMLButtonElement, isDisabled: boolean) {
         element.disabled = isDisabled;
     }
-    
+
     // Установить изображение с алтернативным текстом
     protected setImage(element: HTMLImageElement, src: string, alt?: string) {
         if (element) {
@@ -61,7 +61,7 @@ export abstract class Component<T> {
     }
 
     // Вернуть корневой DOM-элемент
-    render(data?: Partial<T> & Record<string, unknown>): HTMLElement {
+    render(data?: Partial<T>): HTMLElement {
         Object.assign(this as object, data ?? {});
         return this.container;
     }

@@ -20,7 +20,7 @@ export class Card extends Component<IProductItem> {
       super(container);
 
       this._cardCategory = this.getElement('.card__category');
-      this._cardTitle = this.getElement('.card__category');
+      this._cardTitle = this.getElement('.card__title');
       this._cardImage = this.getElement('.card__image') as HTMLImageElement;
       this._cardPrice = this.getElement('.card__price');
 
@@ -41,14 +41,17 @@ export class Card extends Component<IProductItem> {
     return String(value) + ' синапсов'
   }
 
-render(data?: Partial<IProductItem>): HTMLElement {
-  if (data) {
-    this.setText(this._cardCategory, data.category);
-    this.setText(this._cardTitle, data.title);
-    this.setImage(this._cardImage, data.image, data.title);
-    this.setText(this._cardPrice, this.setPrice(data.price));
-    this.cardCategory = data.category;
+  render(data?: Partial<IProductItem>): HTMLElement {
+    super.render(data);
+
+    if (data) {
+      this.setText(this._cardCategory, data.category);
+      this.setText(this._cardTitle, data.title);
+      this.setImage(this._cardImage, data.image, data.title);
+      this.setText(this._cardPrice, this.setPrice(data.price));
+      this.cardCategory = data.category;
+    }
+
+    return this.container;
   }
-  return super.render(data);
-}
 }

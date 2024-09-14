@@ -6,8 +6,9 @@ export class CardPreviewModal extends Card {
   private text: HTMLElement;
   private button: HTMLButtonElement;
   private basketProducts: IProductItem[];
+  private currentProduct: IProductItem;
 
-  constructor(container: HTMLTemplateElement, protected events: IEvents, basketProducts: IProductItem[]) {
+  constructor(container: HTMLElement, protected events: IEvents, basketProducts: IProductItem[]) {
     super(container); // Вызываем конструктор родительского класса
 
     this.basketProducts = basketProducts;
@@ -16,7 +17,7 @@ export class CardPreviewModal extends Card {
     this.button = this.getElement('.card__button') as HTMLButtonElement;
 
     this.button.addEventListener('click', () => {
-      this.events.emit('product:addBasket');
+      this.events.emit('product:addBasketItem', this.currentProduct);
     });
   }
 
@@ -30,7 +31,9 @@ export class CardPreviewModal extends Card {
     return 'Не продается';
   }
 
-render(data: IProductItem): HTMLElement {
+	render(data: IProductItem): HTMLElement {
+    super.render(data);
+    this.currentProduct = data;
     const isInBasket = this.basketProducts.some((productItem) => productItem.id === data.id);
 
     this.setText(this._cardCategory, data.category);
@@ -42,6 +45,6 @@ render(data: IProductItem): HTMLElement {
     this.setDisabled(this.button, isInBasket || data.price === null);
     this.cardCategory = data.category;
 
-    return super.render(data);
+    return this.container;
   }
 }
